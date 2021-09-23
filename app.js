@@ -7,7 +7,7 @@ const app = express()
 app.use(function (req, res, next) {
   res.set('x-timestamp', Date.now())
   res.set('x-powered-by', 'cyclic.sh')
-  console.log(`[${new Date().toISOString()}] ${req.ip} ${req.method} ${req.path}`);
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
   console.log({cookies: req.cookies, headers: req.headers})
   next();
 });
@@ -25,20 +25,24 @@ var options = {
 }
 app.use(express.static('public', options))
 
+// app.use('*', async (req,res) => {
+//   res.sendFile(path.resolve(__dirname,'./public/cyclic-logo.png'))
+// })
+
 // #############################################################################
 // Catch all handler for all other request.
-// app.use('*', async (req,res) => {
-//   res.json({
-//     at: new Date().toISOString(),
-//     method: req.method,
-//     hostname: req.hostname,
-//     server_ip: ip,
-//     query: req.query,
-//     headers: req.headers,
-//     cookies: req.cookies,
-//     params: req.params,
-//     env: process.env
-//   }).end()
-// })
+app.use('*', async (req,res) => {
+  res.json({
+    at: new Date().toISOString(),
+    method: req.method,
+    hostname: req.hostname,
+    server_ip: ip,
+    query: req.query,
+    headers: req.headers,
+    cookies: req.cookies,
+    params: req.params,
+    env: process.env
+  }).end()
+})
 
 module.exports = app
