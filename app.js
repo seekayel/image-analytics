@@ -36,7 +36,6 @@ app.use('*', async (req,res) => {
     at: new Date().toISOString(),
     method: req.method,
     hostname: req.hostname,
-    server_ip: ip,
     query: req.query,
     headers: req.headers,
     cookies: req.cookies,
