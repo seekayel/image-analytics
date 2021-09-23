@@ -8,4 +8,4 @@ This repo tracks users who load the images that are served from the public folde
 
 ## MD Image
 
-![Cyclic Logo](https://insect-research.cyclic-app.com/cyclic-logo.png?q=some%20value){:height="55px"}
+![Cyclic Logo](https://insect-research.cyclic-app.com/cyclic-logo.png?q=some%20value | height=55px)
