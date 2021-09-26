@@ -1,5 +1,6 @@
 const express = require('express')
 const path = require("path");
+const axios = require('axios')
 const app = express()
 
 // #############################################################################
@@ -11,6 +12,46 @@ app.use(function (req, res, next) {
   console.log({cookies: req.cookies, headers: req.headers})
   next();
 });
+
+
+// #############################################################################
+// Track each render to GA
+const GA_TRACKING_ID = process.env.GA_TRACKING_ID || 'bob';
+
+function newUID(){
+  let r1 = (Math.random() + 1).toString(36).substring(2)
+  let r2 = (Math.random() + 1).toString(36).substring(2)
+  return `uid_${r1}${r2}`
+}
+
+async function track(uid, {category='', action='', label='', value=''}) {
+  const data = {
+    v: '1',
+    tid: GA_TRACKING_ID,
+    cid: uid,
+    t: 'event',
+    ec: category,
+    ea: action,
+    el: label,
+    ev: value,
+  };
+
+  return await axios.get('http://www.google-analytics.com/debug/collect', {
+    params: {
+      data
+    }
+  })
+};
+
+app.use(async function(req,res,next) {
+  let r = await track(newUID(), {
+    action: 'request',
+    value: req.path,
+    category: 'view'
+  })
+  console.log(r.headers)
+  next()
+})
 
 // #############################################################################
 // This configures static hosting for files in /public that have the extensions
@@ -45,3 +86,4 @@ app.use('*', async (req,res) => {
 })
 
 module.exports = app
+
