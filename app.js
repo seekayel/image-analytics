@@ -1,5 +1,6 @@
 const express = require('express')
 const path = require("path");
+const axios = require('axios')
 const app = express()
 
 // #############################################################################
@@ -11,6 +12,42 @@ app.use(function (req, res, next) {
   console.log({cookies: req.cookies, headers: req.headers})
   next();
 });
+
+
+function newUID(){
+  let r1 = (Math.random() + 1).toString(36).substring(2)
+  let r2 = (Math.random() + 1).toString(36).substring(2)
+  return `uid_${r1}${r2}`
+}
+
+// #############################################################################
+// Track each render to GA
+const GA_TRACKING_ID = process.env.GA_TRACKING_ID;
+
+async function track(uid, host, path) {
+  const data = {
+    v: '1',
+    tid: GA_TRACKING_ID,
+    cid: uid,
+    t: 'pageview',
+    dt: 'Document Title',
+    dh: host,
+    dp: path,
+  };
+
+  return await axios.post('http://www.google-analytics.com/collect', {
+    params: {
+      data
+    }
+  })
+};
+
+app.use(async function(req,res,next) {
+  let r = await track(newUID(), req.hostname, req.path)
+  console.log(r.headers)
+  console.log(r.body)
+  next()
+})
 
 // #############################################################################
 // This configures static hosting for files in /public that have the extensions
@@ -44,4 +81,5 @@ app.use('*', async (req,res) => {
   }).end()
 })
 
-module.exports = app
+module.exports.app = app
+module.exports.track = track
