@@ -39,7 +39,7 @@ async function track(uid, host, path) {
   // -H 'sec-fetch-dest: empty' \
   // -H 'referer: https://ga-dev-tools.web.app/' \
   // -H 'accept-language: en-US,en;q=0.9' \
-  // --data-raw 'v=1&t=pageview&tid=UA-199750669-4&cid=123&dp=%2F&dh=localhost' \
+  // --data-raw 'v=1&t=pageview&tid=UA-123456789-0&cid=123&dp=%2F&dh=localhost' \
   // --compressed
 
   // fetch("https://www.google-analytics.com/collect", {
@@ -56,7 +56,7 @@ async function track(uid, host, path) {
   //   },
   //   "referrer": "https://ga-dev-tools.web.app/",
   //   "referrerPolicy": "strict-origin-when-cross-origin",
-  //   "body": "v=1&t=pageview&tid=UA-199750669-4&cid=123&dp=%2F&dh=localhost",
+  //   "body": "v=1&t=pageview&tid=UA-123456789-0&cid=123&dp=%2F&dh=localhost",
   //   "method": "POST",
   //   "mode": "cors"
   // });
@@ -69,8 +69,8 @@ async function track(uid, host, path) {
     dh: host,
     dp: path,
   };
-
-  return await axios.post('https://www.google-analytics.com/collect', qs.stringify(params))
+console.log(`calling track with ${params.tid}`)
+  return await axios.post('https://www.google-analytics.com/collect', qs.stringify(params), {headers: {authority: 'www.google-analytics.com'}})
 };
 
 app.use(async function(req,res,next) {

@@ -6,7 +6,7 @@
   "scripts": {
     "serve": "nodemon -r dotenv/config --watch . server.js",
     "start": "node server.js",
-    "test": "jest"
+    "test": "jest --setupFiles dotenv/config"
   },
   "repository": {
     "type": "git",
