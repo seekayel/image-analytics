@@ -1,6 +1,6 @@
 const express = require('express')
-const path = require("path");
 const axios = require('axios')
+const qs = require('qs')
 const app = express()
 
 // #############################################################################
@@ -25,7 +25,42 @@ function newUID(){
 const GA_TRACKING_ID = process.env.GA_TRACKING_ID;
 
 async function track(uid, host, path) {
-  const data = {
+  // curl 'https://www.google-analytics.com/collect' \
+  // -H 'authority: www.google-analytics.com' \
+  // -H 'sec-ch-ua: "Google Chrome";v="93", " Not;A Brand";v="99", "Chromium";v="93"' \
+  // -H 'sec-ch-ua-mobile: ?0' \
+  // -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36' \
+  // -H 'sec-ch-ua-platform: "macOS"' \
+  // -H 'content-type: text/plain;charset=UTF-8' \
+  // -H 'accept: */*' \
+  // -H 'origin: https://ga-dev-tools.web.app' \
+  // -H 'sec-fetch-site: cross-site' \
+  // -H 'sec-fetch-mode: cors' \
+  // -H 'sec-fetch-dest: empty' \
+  // -H 'referer: https://ga-dev-tools.web.app/' \
+  // -H 'accept-language: en-US,en;q=0.9' \
+  // --data-raw 'v=1&t=pageview&tid=UA-199750669-4&cid=123&dp=%2F&dh=localhost' \
+  // --compressed
+
+  // fetch("https://www.google-analytics.com/collect", {
+  //   "headers": {
+  //     "accept": "*/*",
+  //     "accept-language": "en-US,en;q=0.9",
+  //     "content-type": "text/plain;charset=UTF-8",
+  //     "sec-ch-ua": "\"Google Chrome\";v=\"93\", \" Not;A Brand\";v=\"99\", \"Chromium\";v=\"93\"",
+  //     "sec-ch-ua-mobile": "?0",
+  //     "sec-ch-ua-platform": "\"macOS\"",
+  //     "sec-fetch-dest": "empty",
+  //     "sec-fetch-mode": "cors",
+  //     "sec-fetch-site": "cross-site"
+  //   },
+  //   "referrer": "https://ga-dev-tools.web.app/",
+  //   "referrerPolicy": "strict-origin-when-cross-origin",
+  //   "body": "v=1&t=pageview&tid=UA-199750669-4&cid=123&dp=%2F&dh=localhost",
+  //   "method": "POST",
+  //   "mode": "cors"
+  // });
+  const params = {
     v: '1',
     tid: GA_TRACKING_ID,
     cid: uid,
@@ -35,11 +70,7 @@ async function track(uid, host, path) {
     dp: path,
   };
 
-  return await axios.post('http://www.google-analytics.com/collect', {
-    params: {
-      data
-    }
-  })
+  return await axios.post('https://www.google-analytics.com/collect', qs.stringify(params))
 };
 
 app.use(async function(req,res,next) {
